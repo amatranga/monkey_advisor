@@ -5,7 +5,7 @@ const config = {
   entry: './client/src/index.jsx',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'public/dist')
+    path: path.resolve(__dirname, 'public/dist'),
   },
   mode: 'development',
   module: {
@@ -18,16 +18,16 @@ const config = {
           {
             loader: 'babel-loader',
             options: {
-              presets: [ '@babel/preset-react', '@babel/preset-env' ]
-            }
-          }
-        ]
-      }
-    ]
+              presets: ['@babel/preset-react', '@babel/preset-env'],
+            },
+          },
+        ],
+      },
+    ],
   },
   resolve: {
-    extensions: [ '.js', '.jsx' ]
-  } 
+    extensions: ['.js', '.jsx'],
+  },
 };
 
 export default config;
