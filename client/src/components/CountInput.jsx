@@ -1,17 +1,39 @@
 import React from 'react';
+import { Grid, TextField } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import propTypes from 'prop-types';
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+  },
+}));
+
 const CountInput = (props) => {
+  const classes = useStyles();
   const { count } = props;
   const { onChange } = props;
 
   return (
-    <form>
-      <label htmlFor="count">
-        Number of Stocks to Retrieve:
-        <input type="number" id="count" name="count" min="0" max="20" defaultValue={count} onChange={onChange} />
-      </label>
-    </form>
+    <Grid item xs={12}>
+      <form className={classes.container} autoComplete="off">
+        <div>
+          <TextField
+            type="number"
+            id="count"
+            name="count"
+            min="0"
+            max="20"
+            defaultValue={count}
+            onChange={onChange}
+          />
+        </div>
+      </form>
+    </Grid>
   );
 };
 

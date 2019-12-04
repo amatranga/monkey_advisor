@@ -1,14 +1,22 @@
 import React from 'react';
+import { Grid } from '@material-ui/core';
 import PropTypes from 'prop-types';
+import Recommendation from './Recommendation';
 
 const Recommendations = (props) => {
   const { recommendations } = props;
 
   return (
-    <div>
-      Recommendations Go Here!
-      {recommendations}
-    </div>
+    <Grid container spacing={3} item xs={12}>
+      {recommendations.map((recommended) => (
+        <Recommendation
+          symbol={recommended.symbol}
+          name={recommended.name}
+          price={recommended.price}
+          key={recommended.key}
+        />
+      ))}
+    </Grid>
   );
 };
 
