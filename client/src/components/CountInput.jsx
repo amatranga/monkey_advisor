@@ -18,6 +18,10 @@ const CountInput = (props) => {
   const { count } = props;
   const { onChange } = props;
 
+  const handleChange = (e) => (
+    onChange(e)
+  );
+
   return (
     <Grid item xs={12}>
       <form className={classes.container} autoComplete="off">
@@ -29,7 +33,7 @@ const CountInput = (props) => {
             min="0"
             max="20"
             defaultValue={count}
-            onChange={onChange}
+            onChange={handleChange}
           />
         </div>
       </form>

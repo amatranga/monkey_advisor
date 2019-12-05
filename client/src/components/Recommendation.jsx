@@ -26,6 +26,7 @@ const Recommendation = (props) => {
   };
 
   const { symbol, name, price } = props;
+  const fixed = Number.parseFloat(price).toFixed(2);
 
   return (
     <Grid
@@ -56,7 +57,7 @@ const Recommendation = (props) => {
             variant="body2"
             component="p"
           >
-            {price}
+            {fixed}
           </Typography>
         </CardContent>
       </Card>

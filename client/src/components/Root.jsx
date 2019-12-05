@@ -7,7 +7,9 @@ import ErrorMessage from './ErrorMessage';
 const Root = () => {
   const [recommendations, setRecommendations] = useState([]);
   const [recommendationCount, setRecommendationCount] = useState(10);
+  const [searchDelayMS, setSearchDelayMS] = useState(500);
   const [error, setError] = useState('');
+  const [searchTimer, setSearchTimer] = useState(undefined);
 
   const stockAPI = '/stocks';
 
@@ -54,13 +56,25 @@ const Root = () => {
     } else if (value > 20) {
       setError('Please select no more than 20 random stocks to view');
     } else {
-      setRecommendationCount(value);
-      getRecommendations(value);
+      setRecommendationCount(parseInt(value, 10));
+      // getRecommendations(value);
     }
   };
 
   useEffect(() => {
-    getRecommendations(recommendationCount);
+    const hasValue = Boolean(recommendationCount);
+    let timer = searchTimer;
+
+    if (hasValue) {
+      if (timer) { clearTimeout(timer); }
+      timer = window.setTimeout(() => {
+        getRecommendations(recommendationCount);
+      }, searchDelayMS);
+      setSearchTimer(timer);
+    } else {
+      clearTimeout(timer);
+      setSearchTimer(undefined);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recommendationCount]);
 
