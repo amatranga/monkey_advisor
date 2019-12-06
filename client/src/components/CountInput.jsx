@@ -27,6 +27,7 @@ const CountInput = (props) => {
       <form className={classes.container} autoComplete="off">
         <div>
           <TextField
+            tabIndex="0"
             type="number"
             id="count"
             name="count"

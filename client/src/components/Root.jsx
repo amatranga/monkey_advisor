@@ -5,78 +5,75 @@ import CountInput from './CountInput';
 import ErrorMessage from './ErrorMessage';
 
 const Root = () => {
-  const [recommendations, setRecommendations] = useState([]);
+  const [allRecommendations, setAllRecommendations] = useState([]);
+  const [recommendations, setrecommendations] = useState([]);
   const [recommendationCount, setRecommendationCount] = useState(10);
-  const [searchDelayMS, setSearchDelayMS] = useState(500);
   const [error, setError] = useState('');
-  const [searchTimer, setSearchTimer] = useState(undefined);
+  const [searchTimer, setsearchTimer] = useState(undefined);
 
   const stockAPI = '/stocks';
+  const searchDelayMS = 500;
 
-  const getRand = (arr, n) => {
-    const res = new Array(n);
-    const len = arr.length;
-    const taken = new Array(n);
-    let o = n;
+  // Functions
+  const debounce = (condition, callback, ...args) => {
+    let timer = searchTimer;
 
-    if (o > len) { throw new RangeError('getRand: more elements taken than available'); }
-    // eslint-disable-next-line no-plusplus
-    while (o--) {
-      const x = Math.floor(Math.random() * len);
-      res[o] = arr[x in taken ? taken[x] : x];
-      res[o].key = o;
-      taken[x] = (len - 1) in taken ? taken[len] : len;
+    if (condition) {
+      if (timer) { clearTimeout(timer); }
+
+      timer = window.setTimeout(() => {
+        callback(...args);
+      }, searchDelayMS);
+      setsearchTimer(timer);
+    } else {
+      clearTimeout(timer);
+      setsearchTimer(undefined);
     }
-
-    return res;
   };
 
-  const getRecommendations = (value) => {
-    fetch(stockAPI, {
-      method: 'GET',
-    }).then((res) => {
-      res.json().then((data) => {
-        const { symbolsList } = data;
-        try {
-          setRecommendations(getRand(symbolsList, value));
-        } catch (e) {
-          setError(e);
-        }
+  const getRand = (arr, n) => (
+    arr
+      .map((x) => ({ x, r: Math.random() }))
+      .sort((a, b) => a.r - b.r)
+      .map((a) => a.x)
+      .slice(0, n)
+  );
+
+  const handleChange = (e) => {
+    const { value } = e.target;
+    const int = parseInt(value, 10);
+
+    debounce(recommendationCount, setRecommendationCount, int);
+    // setRecommendationCount(int);
+  };
+
+  const getRecommendations = () => {
+    fetch(stockAPI, { method: 'GET' }).then((data) => {
+      data.json().then((res) => {
+        const { symbolsList } = res;
+        setAllRecommendations(symbolsList);
       });
     }).catch((err) => {
       setError(err);
     });
   };
 
-  const handleChange = (e) => {
-    const { value } = e.target;
-    setError('');
-    if (value < 1) {
-      setError('Please select between 1 and 20 random stocks to view');
-    } else if (value > 20) {
-      setError('Please select no more than 20 random stocks to view');
-    } else {
-      setRecommendationCount(parseInt(value, 10));
-      // getRecommendations(value);
-    }
-  };
+  // Effects
+  useEffect(() => {
+    getRecommendations();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
-    const hasValue = Boolean(recommendationCount);
-    let timer = searchTimer;
-
-    if (hasValue) {
-      if (timer) { clearTimeout(timer); }
-      timer = window.setTimeout(() => {
-        getRecommendations(recommendationCount);
-      }, searchDelayMS);
-      setSearchTimer(timer);
-    } else {
-      clearTimeout(timer);
-      setSearchTimer(undefined);
+    if (allRecommendations) {
+      if (recommendationCount < 1 || recommendationCount > 20) {
+        setError('Please select a number between 1 and 20');
+      } else {
+        setError('');
+        setrecommendations(getRand(allRecommendations, recommendationCount));
+      }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recommendationCount]);
+  }, [allRecommendations, recommendationCount]);
 
   return (
     <Grid container spacing={3}>
